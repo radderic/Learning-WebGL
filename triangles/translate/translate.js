@@ -5,8 +5,9 @@ window.main = main;
 var VSHADER_SOURCE = `
     attribute vec4 a_Position;
     attribute float a_Size;
+    uniform vec4 u_Translate;
     void main() {
-        gl_Position = a_Position;
+        gl_Position = a_Position + u_Translate;
         gl_PointSize = a_Size;
     }
 `;
@@ -54,14 +55,23 @@ function main() {
         return;
     }
 
+    var u_Translate = gl.getUniformLocation(gl.program, 'u_Translate');
+    if(u_Translate < 0) {
+        console.log('Failed to get u_Translate uniform variable');
+        return;
+    }
+
     var n = initVertexBuffers(gl);
     if(n < 0) {
         console.log('Failed to set the positions of the vertices');
         return;
     }
 
+    var Tx = 0.5, Ty = 0.3, Tz = 0.0;
+
     gl.vertexAttrib1f(a_Size, 10.0);
     gl.uniform4f(u_FragColor, 1.0, 1.0, 0.0, 1.0);
+    gl.uniform4f(u_Translate, Tx, Ty, Tz, 0.0);
 
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
     gl.clear(gl.COLOR_BUFFER_BIT);
